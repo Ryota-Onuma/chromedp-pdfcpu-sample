@@ -58,6 +58,7 @@ func main() {
 		// 	  SEE: https://docs.rancherdesktop.io/references/architecture
 		// OrbStackは厳密にはどうやら独立したVMで動かしてはいないようだが、セキュリティに自信ありそうなので大丈夫でしょうおそらく
 		// 	  SEE: https://docs.orbstack.dev/architecture#security
+		// Mac用の上記コンテナ実行環境じゃないものとかは、Dockerfileでホストマシンとユーザーをわけるなどして対応する
 		chromedp.Flag(("no-sandbox"), true),
 	)
 	allocCtx, _ := chromedp.NewExecAllocator(ctx, opts...)
