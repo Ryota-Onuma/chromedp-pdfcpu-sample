@@ -16,7 +16,9 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
+type Handler struct{}
+
+func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	val := map[string]string{
 		"あいさつ":     "こんにちは",
 		"Greeting": "Hello",
@@ -51,15 +53,28 @@ func main() {
 	chromdpCtx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	go func() {
-		http.HandleFunc("/", handler)
-		if err := http.ListenAndServe(":3000", nil); err != nil {
+	srv := &http.Server{
+		Addr:    ":9999",
+		Handler: nil,
+	}
+
+	http.Handle("/pdf/generate", &Handler{})
+	go srv.ListenAndServe()
+
+	defer func(ctx context.Context) {
+		if err := srv.Shutdown(chromdpCtx); err != nil {
 			log.Fatal(err)
 		}
-	}()
+	}(chromdpCtx)
 
+	if err := generatePDF(chromdpCtx); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func generatePDF(chromdpCtx context.Context) error {
 	if err := chromedp.Run(chromdpCtx,
-		chromedp.Navigate("http://localhost:3000"),
+		chromedp.Navigate("http://localhost:9999/pdf/generate"),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			buf, _, err := page.PrintToPDF().
 				WithPreferCSSPageSize(true).
@@ -87,9 +102,11 @@ func main() {
 				return err
 			}
 			conf := model.NewDefaultConfiguration()
-			return api.NUp(r, out, nil, nil, nup, conf)
+			api.NUp(r, out, nil, nil, nup, conf)
+			return nil
 		}),
 	); err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
