@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -59,7 +60,13 @@ func main() {
 	}
 
 	http.Handle("/pdf/generate", &Handler{})
-	go srv.ListenAndServe()
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			if !errors.Is(err, http.ErrServerClosed) {
+				log.Fatal(err)
+			}
+		}
+	}()
 
 	defer func(ctx context.Context) {
 		if err := srv.Shutdown(chromdpCtx); err != nil {
