@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* CSSはhttps://deep-space.blue/web/1858　を参考 */
+
+        @page {
+            size: A4 portrait; /* 横の場合はlandscape */
+            margin: 0mm;
+        }
+
+        /* 各要素の余白リセット */
+        * {
+            margin: 0mm;
+            padding: 0mm;
+        }
+
+        /* 印刷時の調子を整える */
+        body {
+            width: 210mm; /* 用紙の横幅を改めて指定 Chrome用 */
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+            line-height: 1.5em;
+        }
+
+        /* 印刷1ページ用のコンテンツはここで定義 */
+        .page {
+            width: 210mm; /* 用紙の横幅を改めて指定 */
+            height: 296.5mm; /* 高さには0.5mm余裕をもたせる */
+            page-break-after: always;
+            box-sizing: border-box;
+            padding: 20mm 25mm; /* 用紙の余白 */
+            font-size: 11pt;
+        }
+
+        .page .boxes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .page .box {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 10px;
+        }
+
+        .page .images {
+            margin: 30px auto;
+        }
+
+        .page h1 {
+            margin: 20px 0;
+        }
+
+        @media screen {
+            body {
+                background: #eee;
+            }
+            .page {
+                background: white; /* 背景を白く */
+                box-shadow: 0 .5mm 2mm rgba(0,0,0,.3); /* ドロップシャドウ */
+                margin: 5mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="page">
+        <h1>Page 1</h1>
+        <p>ここにページ1のコンテンツを記述します。</p>
+        <h1>CSSの四角形</h1>
+        <div class="boxes">
+            <div class="box" style="background-color: red;"></div>
+            <div class="box" style="background-color: blue;"></div>
+            <div class="box" style="background-color: yellow;"></div>
+        </div>
+        <h1>画像の四角形</h1>
+        <div class="images">
+            <img src="https://placehold.jp/3d4070/ffffff/200x200.png" alt="">
+        </div>
+        <h1>Goのtemplateで埋め込んだ文字列</h1>
+        <div>
+            <p>{{ .あいさつ }} は日本語埋め込み</p>
+            <p>{{ .Greeting }} is embed for an English example.</p>
+        </div>
+    </section>
+    <section class="page">
+        <h1>Page 2</h1>
+        <p>ここにページ２のコンテンツを記述します。</p>
+    </section>
+</body>
+</html>
