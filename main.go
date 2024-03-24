@@ -25,20 +25,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	// ファイルじゃなくてもいいが、HTMLを読み込む
 	rawHTMLBytes, err := os.ReadFile("sample.html")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	tmp, err := template.New("template").Parse(string(rawHTMLBytes))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	buf := new(bytes.Buffer)
 	if err := tmp.Execute(buf, val); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	fmt.Println(buf.String())
 	fmt.Fprintf(w, string(buf.String()))
 }
 
