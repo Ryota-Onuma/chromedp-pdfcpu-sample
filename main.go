@@ -49,6 +49,16 @@ func main() {
 	var opts []chromedp.ExecAllocatorOption
 	opts = append(opts,
 		chromedp.Flag("headless", true),
+		// chromiumのsandboxは、ホストマシン上への変更や機密情報へのアクセスを防ぐためのもの
+		// CAP_SYS_ADMINのcapabilityをつけないと、namespaceを使ってchromium sandboxプロセスを分離することができない
+		// CAP_SYS_ADMINをつけると、影響範囲が広いので、つけない方法を考える
+		// 隔離してホストマシンを守るための機能なので、別の方法で隔離できてればOKなはず
+		// Docker for MacやRancher Desktopはdockerdが動くVMがセキュリティ境界になっているため、--no-sandboxあっても問題ない
+		//    SEE: https://docs.docker.com/desktop/mac/permission-requirements/#containers-running-as-root-within-the-linux-vm
+		// 	  SEE: https://docs.rancherdesktop.io/references/architecture
+		// OrbStackは厳密にはどうやら独立したVMで動かしてはいないようだが、セキュリティに自信ありそうなので大丈夫でしょうおそらく
+		// 	  SEE: https://docs.orbstack.dev/architecture#security
+		chromedp.Flag(("no-sandbox"), true),
 	)
 	allocCtx, _ := chromedp.NewExecAllocator(ctx, opts...)
 	chromdpCtx, cancel := chromedp.NewContext(allocCtx)
